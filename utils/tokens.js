@@ -13,6 +13,16 @@ function createUserJwt (user) {
     return generateToken(payload)
 }
 
+function validateToken (token) {
+    try {
+        const decodedToken = jwt.verify(token, SECRET_KEY)
+        return decodedToken
+    } catch (error) {
+        return next(error)
+    }
+}
+
 module.exports = {
-    createUserJwt
+    createUserJwt,
+    validateToken
 }
