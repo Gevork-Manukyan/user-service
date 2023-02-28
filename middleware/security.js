@@ -29,3 +29,18 @@ const extractUserFromJwt = (req, res, next) => {
         return next();
     }
 }
+
+// Verify if a authenticated user exists
+const requireAuthenticatedUser = (req, res, next) => {
+    try {
+        const { user } = res.locals;
+        if(!user?.email) {
+            throw new UnauthorizedError();
+        }
+        return next();
+
+    } catch (error) {
+
+        return next(error);
+    }
+}
