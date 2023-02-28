@@ -1,5 +1,4 @@
-import { PORT } from './config';
-
+const { PORT } = require("./config");
 const express = require('express');
 const app = express();
 
