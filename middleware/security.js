@@ -44,3 +44,9 @@ const requireAuthenticatedUser = (req, res, next) => {
         return next(error);
     }
 }
+
+module.exports = {
+    extractJwtHeader,
+    extractUserFromJwt,
+    requireAuthenticatedUser
+}
