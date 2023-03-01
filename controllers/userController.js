@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const { BCRYPT_WORK_FACTOR }  = require('../config');
 const User = require("../models/user.model")
 const { BadRequestError } = require('../utils/errors');
 
@@ -23,14 +25,24 @@ async function register (credentials) {
     const existingUser = await User.findOne({ email })
     if (existingUser) throw new BadRequestError(`A user already exists with email: ${email}`);
 
+    // Encrypt Password
+    const hashedPassword = bcrypt.hash(password, BCRYPT_WORK_FACTOR)
+    const normalizedEmail = email.toLowerCase()
     
-    
+
     const user = new User({
         firstName,
         lastName,
         email,
         password,
     })
+
+    try {
+        return await user.save()
+
+    } catch (error) {
+        
+    }
 
 
 }
