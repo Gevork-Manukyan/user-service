@@ -30,19 +30,7 @@ async function register (credentials) {
     const normalizedEmail = email.toLowerCase()
     
 
-    const user = new User({
-        firstName,
-        lastName,
-        email,
-        password,
-    })
-
-    try {
-        return await user.save()
-
-    } catch (error) {
-        
-    }
+    // TODO: Save user to DB
 
 
 }
