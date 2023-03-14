@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { BCRYPT_WORK_FACTOR }  = require('../config');
 const User = require("../models/user.model")
+const db = require("../db")
 const { BadRequestError } = require('../utils/errors');
 
 async function register (credentials) {
@@ -22,7 +23,7 @@ async function register (credentials) {
     if (password.trim() === "") throw new BadRequestError('Invalid Password')
 
     // Check if user exists with this email
-    const existingUser = await User.findOne({ email })
+    const existingUser = fetchUserByEmail(email)
     if (existingUser) throw new BadRequestError(`A user already exists with email: ${email}`);
 
     // Encrypt Password
@@ -30,8 +31,33 @@ async function register (credentials) {
     const normalizedEmail = email.toLowerCase()
     
 
-    // TODO: Save user to DB
+    // Save user to DB
+    db.run(`INSERT INTO users(email, password, firstName, lastName)
+            VALUES(?, ?, ?, ?);
+            SELECT * FROM users WHERE id = last_insert_rowid();`, [normalizedEmail, hashedPassword, firstName, lastName], (err) => {
+            if (err) {
+                console.log(err.message);
+            }
+            
+            console.log('Inserted data into "users" table.');
+    });
 
+    
+
+}
+
+async function fetchUserByEmail(email) {
+    if (!email) {
+        throw new BadRequestError('No email provided');
+    }
+
+    const query = ` SELECT * FROM users WHERE email = ? `;
+
+    const result = db.run(query, [email.toLowerCase()]);
+
+    // const user = result.rows[0];
+
+    // return user;
 
 }
 

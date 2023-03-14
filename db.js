@@ -7,4 +7,20 @@ const db = new sqlite3.Database('users.db', (err) => {
     console.log('Connected to the users database.');
 });
 
+db.run(`
+  CREATE TABLE IF NOT EXISTS users(
+  id        INTEGER PRIMARY KEY AUTOINCREMENT,
+  email     TEXT NOT NULL UNIQUE,
+  password  TEXT NOT NULL,
+  firstName TEXT NOT NULL,
+  lastName  TEXT NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+)`, (err) => {
+  if (err) {
+    console.log(err.message)
+  }
+
+  console.log('Created "users" table.')
+})
+ 
 module.exports = db

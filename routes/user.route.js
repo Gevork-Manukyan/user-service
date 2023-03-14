@@ -2,8 +2,7 @@ const express = require('express');
 const tokens = require('../utils/tokens');
 const security = require('../middleware/security');
 const router = express.Router();
-const { register } = require("../controllers")
-
+const { register } = require("../controllers/userController")
 
 router.post("/register", async (req, res, next) => {
     try {
@@ -14,3 +13,5 @@ router.post("/register", async (req, res, next) => {
         next(error)
     }
 })
+
+module.exports = router

@@ -4,11 +4,14 @@ const security = require("./middleware/security")
 const app = express();
 const cors = require('cors')
 const db = require("./db")
+const userRoutes = require("./routes/user.route")
 
 
 app.use(cors());
 app.use(express.json());
 app.use(security.extractUserFromJwt);
+
+app.use("/user", userRoutes)
 
 
 /** Handle 404 errors -- this matches everything */
