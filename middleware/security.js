@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken")
-const { SECRET_KEY } = require("./config");
+const { SECRET_KEY } = require("../config");
 
 
 // Extract the JWT from the request header

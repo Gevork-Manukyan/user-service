@@ -2,6 +2,8 @@ const { PORT } = require("./config");
 const express = require('express');
 const security = require("./middleware/security")
 const app = express();
+const cors = require('cors')
+const db = require("./db")
 
 
 app.use(cors());
