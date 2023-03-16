@@ -23,7 +23,7 @@ async function register (credentials) {
     if (password.trim() === "") throw new BadRequestError('Invalid Password')
 
     // Check if user exists with this email
-    const existingUser = await fetchUserByEmail(email)
+    const existingUser = await User.findByEmail(email)
     if (existingUser) throw new BadRequestError(`A user already exists with email: ${email}`);
 
     // Encrypt Password
@@ -32,34 +32,13 @@ async function register (credentials) {
     
     // Save user to DB
     // const newUser = await insertIntoDB([normalizedEmail, hashedPassword, firstName, lastName])
-    const newUser = User.create({
+    const newUser = await User.create({
         firstName,
         lastName,
         email,
         password
     })
     return newUser
-}
-
-async function fetchUserByEmail(email) {
-    if (!email) {
-      throw new BadRequestError('No email provided');
-    }
-  
-    // const query = `SELECT * FROM users;`;
-    const query = `SELECT * FROM users WHERE email = ?`;
-    
-    return new Promise((resolve, reject) => {
-
-        db.all(query, [email.toLowerCase()], (err, result) => {
-            if (err) {
-                reject(err);
-            }
-            
-            resolve(result[0])
-        });
-    })
-        
 }
 
 
