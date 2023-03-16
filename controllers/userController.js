@@ -49,14 +49,6 @@ async function login(credentials) {
         }
     })
 
-    const user = await User.fetchUserByEmail(credentials.email);
-    if (user) {
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (isValid) {
-            return User.makePublicUser(user);
-        }
-    }
-
     const email = credentials.email
     const password = credentials.password
 
