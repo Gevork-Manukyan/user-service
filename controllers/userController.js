@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const { BCRYPT_WORK_FACTOR }  = require('../config');
 const User = require("../models/user.model")
 const db = require("../db")
-const { BadRequestError } = require('../utils/errors');
+const { BadRequestError, UnauthorizedError } = require('../utils/errors');
 
 async function register (credentials) {
     const requiredFields = ['email', 'password', 'firstName', 'lastName'];
@@ -41,9 +41,38 @@ async function register (credentials) {
     return newUser
 }
 
+async function login(credentials) {
+    const requiredFields = ['email', 'password'];
+    requiredFields.forEach((field) => {
+        if (!credentials?.hasOwnProperty(field)) {
+            throw new BadRequestError(`Missing ${field} in request body.`);
+        }
+    })
 
+    const user = await User.fetchUserByEmail(credentials.email);
+    if (user) {
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (isValid) {
+            return User.makePublicUser(user);
+        }
+    }
+
+    const email = credentials.email
+    const password = credentials.password
+
+    // Check if user exists with this email
+    const existingUser = await User.findByEmail(email)
+    if (!existingUser) throw new BadRequestError(`No user found with email: ${email}`);
+
+    // Check password
+    const isPasswordMatch = await bcrypt.compare(password, existingUser.password)
+    if (!isPasswordMatch) throw new BadRequestError(`Invalid password`);
+
+    return existingUser
+}
   
 
 module.exports = {
-    register
+    register,
+    login
 }
