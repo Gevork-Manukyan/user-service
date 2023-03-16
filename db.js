@@ -19,8 +19,7 @@ db.run(`
   if (err) {
     console.log(err.message)
   }
-
-  console.log('Created "users" table.')
 })
+
  
 module.exports = db

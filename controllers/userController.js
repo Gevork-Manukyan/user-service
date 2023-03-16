@@ -23,43 +23,60 @@ async function register (credentials) {
     if (password.trim() === "") throw new BadRequestError('Invalid Password')
 
     // Check if user exists with this email
-    const existingUser = fetchUserByEmail(email)
+    const existingUser = await fetchUserByEmail(email)
     if (existingUser) throw new BadRequestError(`A user already exists with email: ${email}`);
 
     // Encrypt Password
     const hashedPassword = bcrypt.hash(password, BCRYPT_WORK_FACTOR)
     const normalizedEmail = email.toLowerCase()
     
-
     // Save user to DB
-    db.run(`INSERT INTO users(email, password, firstName, lastName)
-            VALUES(?, ?, ?, ?);
-            SELECT * FROM users WHERE id = last_insert_rowid();`, [normalizedEmail, hashedPassword, firstName, lastName], (err) => {
-            if (err) {
-                console.log(err.message);
-            }
-            
-            console.log('Inserted data into "users" table.');
-    });
-
-    
-
+    const newUser = await insertIntoDB([normalizedEmail, hashedPassword, firstName, lastName])
+    return newUser
 }
 
 async function fetchUserByEmail(email) {
     if (!email) {
-        throw new BadRequestError('No email provided');
+      throw new BadRequestError('No email provided');
     }
+  
+    // const query = `SELECT * FROM users;`;
+    const query = `SELECT * FROM users WHERE email = ?`;
+    
+    return new Promise((resolve, reject) => {
 
-    const query = ` SELECT * FROM users WHERE email = ? `;
-
-    const result = db.run(query, [email.toLowerCase()]);
-
-    // const user = result.rows[0];
-
-    // return user;
-
+        db.all(query, [email.toLowerCase()], (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            
+            resolve(result[0])
+        });
+    })
+        
 }
+
+async function insertIntoDB(data) {
+    db.run(`INSERT INTO users(email, password, firstName, lastName)
+            VALUES(?, ?, ?, ?);`, data, (err, result) => {
+            if (err) {
+                console.log(err.message);
+            }
+
+            console.log('Inserted data into "users" table.');
+    });
+
+    return new Promise ((resolve, reject) => {
+
+        db.get("SELECT * FROM users WHERE id = last_insert_rowid();", (err, result) => {
+            if (err) reject(err)
+
+            resolve(result)
+        })
+    })
+    
+}
+  
 
 module.exports = {
     register

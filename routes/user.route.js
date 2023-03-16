@@ -8,7 +8,7 @@ router.post("/register", async (req, res, next) => {
     try {
         const user = await register(req.body)
         const token = tokens.createUserJwt(user)
-        return res.status("201").json({ user, token })
+        return res.status(201).json({ user, token })
     } catch (error) {
         next(error)
     }
