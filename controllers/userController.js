@@ -31,12 +31,11 @@ async function register (credentials) {
     const normalizedEmail = email.toLowerCase()
     
     // Save user to DB
-    // const newUser = await insertIntoDB([normalizedEmail, hashedPassword, firstName, lastName])
     const newUser = await User.create({
         firstName,
         lastName,
-        email,
-        password
+        email: normalizedEmail,
+        password: hashedPassword
     })
     return newUser
 }
@@ -57,6 +56,7 @@ async function login(credentials) {
     if (!existingUser) throw new BadRequestError(`No user found with email: ${email}`);
 
     // Check password
+    console.log(existingUser)
     const isPasswordMatch = await bcrypt.compare(password, existingUser.password)
     if (!isPasswordMatch) throw new BadRequestError(`Invalid password`);
 

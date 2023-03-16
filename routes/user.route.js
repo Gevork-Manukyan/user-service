@@ -2,7 +2,7 @@ const express = require('express');
 const tokens = require('../utils/tokens');
 const security = require('../middleware/security');
 const router = express.Router();
-const { register } = require("../controllers/userController")
+const { register, login } = require("../controllers/userController")
 
 router.post("/register", async (req, res, next) => {
     try {
