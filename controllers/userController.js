@@ -31,7 +31,13 @@ async function register (credentials) {
     const normalizedEmail = email.toLowerCase()
     
     // Save user to DB
-    const newUser = await insertIntoDB([normalizedEmail, hashedPassword, firstName, lastName])
+    // const newUser = await insertIntoDB([normalizedEmail, hashedPassword, firstName, lastName])
+    const newUser = User.create({
+        firstName,
+        lastName,
+        email,
+        password
+    })
     return newUser
 }
 
@@ -56,26 +62,7 @@ async function fetchUserByEmail(email) {
         
 }
 
-async function insertIntoDB(data) {
-    db.run(`INSERT INTO users(email, password, firstName, lastName)
-            VALUES(?, ?, ?, ?);`, data, (err, result) => {
-            if (err) {
-                console.log(err.message);
-            }
 
-            console.log('Inserted data into "users" table.');
-    });
-
-    return new Promise ((resolve, reject) => {
-
-        db.get("SELECT * FROM users WHERE id = last_insert_rowid();", (err, result) => {
-            if (err) reject(err)
-
-            resolve(result)
-        })
-    })
-    
-}
   
 
 module.exports = {
