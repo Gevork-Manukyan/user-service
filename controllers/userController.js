@@ -27,7 +27,7 @@ async function register (credentials) {
     if (existingUser) throw new BadRequestError(`A user already exists with email: ${email}`);
 
     // Encrypt Password
-    const hashedPassword = bcrypt.hash(password, BCRYPT_WORK_FACTOR)
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR)
     const normalizedEmail = email.toLowerCase()
     
     // Save user to DB
@@ -48,7 +48,7 @@ async function login(credentials) {
         }
     })
 
-    const email = credentials.email
+    const email = credentials.email.toLowerCase()
     const password = credentials.password
 
     // Check if user exists with this email
