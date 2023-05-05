@@ -1,11 +1,11 @@
+import { SECRET_KEY, JWT_EXPIRES_IN } from "../config"
 const jwt = require("jsonwebtoken")
-const { SECRET_KEY, JWT_EXPIRES_IN } = require("../config")
 
-function generateToken (data) {
+function generateToken (data: {email: string}) {
     return jwt.sign(data, SECRET_KEY, { expiresIn: JWT_EXPIRES_IN})
 }
 
-function createUserJwt (user) {
+function createUserJwt (user: {email: string}) {
     const payload = {
         email: user.email
     }
@@ -13,16 +13,16 @@ function createUserJwt (user) {
     return generateToken(payload)
 }
 
-function validateToken (token) {
+function validateToken (token: string) {
     try {
         const decodedToken = jwt.verify(token, SECRET_KEY)
         return decodedToken
     } catch (error) {
-        return next(error)
+        return error
     }
 }
 
-module.exports = {
+export {
     createUserJwt,
     validateToken
 }

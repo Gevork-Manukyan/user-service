@@ -1,10 +1,16 @@
+import { BadRequestError } from '../utils/errors'
+import { BCRYPT_WORK_FACTOR } from '../config'
 const bcrypt = require('bcrypt');
-const { BCRYPT_WORK_FACTOR }  = require('../config');
 const User = require("../models/user.model")
 const db = require("../db")
-const { BadRequestError, UnauthorizedError } = require('../utils/errors');
 
-async function register (credentials) {
+interface RegisterUser {
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+}
+async function register (credentials: RegisterUser): Promise<RegisterUser> {
     const requiredFields = ['email', 'password', 'firstName', 'lastName'];
     requiredFields.forEach((field) => {
         if (!credentials?.hasOwnProperty(field)) {
@@ -32,15 +38,24 @@ async function register (credentials) {
     
     // Save user to DB
     const newUser = await User.create({
-        firstName,
-        lastName,
         email: normalizedEmail,
-        password: hashedPassword
+        password: hashedPassword,
+        firstName,
+        lastName
     })
     return newUser
 }
 
-async function login(credentials) {
+interface LoginCredentials {
+    email: string,
+    password: string
+}
+type LoginUserResponse = {
+    email: string,
+    firstName: string,
+    lastName: string
+}
+async function login(credentials: LoginCredentials): Promise<LoginUserResponse> {
     const requiredFields = ['email', 'password'];
     requiredFields.forEach((field) => {
         if (!credentials?.hasOwnProperty(field)) {
@@ -56,15 +71,15 @@ async function login(credentials) {
     if (!existingUser) throw new BadRequestError(`No user found with email: ${email}`);
 
     // Check password
-    console.log(existingUser)
     const isPasswordMatch = await bcrypt.compare(password, existingUser.password)
     if (!isPasswordMatch) throw new BadRequestError(`Invalid password`);
 
+    //TODO: Check what object is being returned here
     return existingUser
 }
   
 
-module.exports = {
+export {
     register,
     login
 }

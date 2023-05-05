@@ -2,7 +2,14 @@ const db = require("../db")
 
 // Create a User model
 class User {
-  constructor(id, firstName, lastName, email, password) {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  static lastID: number;
+
+  constructor(id: number, firstName: string, lastName: string, email: string, password: string) {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -10,7 +17,7 @@ class User {
     this.password = password;
   }
 
-  static createTable() {
+  static createTable = () => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       firstName TEXT NOT NULL,
@@ -20,9 +27,9 @@ class User {
     )`);
   }
 
-  static create(user) {
+  static create(user: User) {
     return new Promise((resolve, reject) => {
-      db.run('INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)', [user.firstName, user.lastName, user.email, user.password], function(err) {
+      db.run('INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)', [user.firstName, user.lastName, user.email, user.password],  (err: Error) => {
         if (err) {
           reject(err);
         } else {
@@ -32,9 +39,9 @@ class User {
     });
   }
 
-  static findById(id) {
+  static findById(id: number) {
     return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM users WHERE id = ?', [id], function(err, row) {
+      db.get('SELECT * FROM users WHERE id = ?', [id], function(err: Error, row: User) {
         if (err) {
           reject(err);
         } else if (row) {
@@ -46,9 +53,9 @@ class User {
     });
   }
 
-  static findByEmail(email) {
+  static findByEmail(email: string) {
     return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM users WHERE email = ?', [email], function(err, row) {
+      db.get('SELECT * FROM users WHERE email = ?', [email], function(err: Error, row: User) {
         if (err) {
           reject(err);
         } else if (row) {
@@ -62,19 +69,19 @@ class User {
 
   static getAll() {
     return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM users', function(err, rows) {
+      db.all('SELECT * FROM users', function(err: Error, rows: [User]) {
         if (err) {
           reject(err);
         } else {
-          resolve(rows.map(row => new User(row.id, row.firstName, row.lastName, row.email, row.password)));
+          resolve(rows.map((row: User) => new User(row.id, row.firstName, row.lastName, row.email, row.password)));
         }
       });
     });
   }
 
   update() {
-    return new Promise((resolve, reject) => {
-      db.run('UPDATE users SET firstName = ?, lastName = ?, email = ?, password = ? WHERE id = ?', [this.firstName, this.lastName, this.email, this.password, this.id], function(err) {
+    return new Promise<void>((resolve, reject) => {
+      db.run('UPDATE users SET firstName = ?, lastName = ?, email = ?, password = ? WHERE id = ?', [this.firstName, this.lastName, this.email, this.password, this.id], function(err: Error) {
         if (err) {
           reject(err);
         } else {
@@ -85,8 +92,8 @@ class User {
   }
 
   delete() {
-    return new Promise((resolve, reject) => {
-      db.run('DELETE FROM users WHERE id = ?', [this.id], function(err) {
+    return new Promise<void>((resolve, reject) => {
+      db.run('DELETE FROM users WHERE id = ?', [this.id], function(err: Error) {
         if (err) {
           reject(err);
         } else {
@@ -97,4 +104,4 @@ class User {
   }
 }
 
-module.exports = User;
+export default User

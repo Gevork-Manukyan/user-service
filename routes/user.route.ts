@@ -1,10 +1,10 @@
+import { register, login } from "../controllers/userController"
 const express = require('express');
 const tokens = require('../utils/tokens');
 const security = require('../middleware/security');
 const router = express.Router();
-const { register, login } = require("../controllers/userController")
 
-router.post("/register", async (req, res, next) => {
+router.post("/register", async (req: any, res: any, next: any) => {
     try {
         const user = await register(req.body)
         const token = tokens.createUserJwt(user)
@@ -14,7 +14,7 @@ router.post("/register", async (req, res, next) => {
     }
 })
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", async (req: any, res: any, next: any) => {
     try {
       const user = await login(req.body);
       if (!user) {
@@ -28,4 +28,4 @@ router.post("/login", async (req, res, next) => {
   });
   
 
-module.exports = router
+export default router
