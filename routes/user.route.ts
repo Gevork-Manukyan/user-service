@@ -1,7 +1,6 @@
 import { register, login } from "../controllers/userController"
+import * as tokens from '../utils/tokens'
 const express = require('express');
-const tokens = require('../utils/tokens');
-const security = require('../middleware/security');
 const router = express.Router();
 
 router.post("/register", async (req: any, res: any, next: any) => {

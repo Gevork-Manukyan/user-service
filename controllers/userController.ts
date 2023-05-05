@@ -1,8 +1,7 @@
 import { BadRequestError } from '../utils/errors'
 import { BCRYPT_WORK_FACTOR } from '../config'
+import User from "../models/user.model"
 const bcrypt = require('bcrypt');
-const User = require("../models/user.model")
-const db = require("../db")
 
 interface RegisterUser {
     email: string,
@@ -38,11 +37,13 @@ async function register (credentials: RegisterUser): Promise<RegisterUser> {
     
     // Save user to DB
     const newUser = await User.create({
+        id: 0,
         email: normalizedEmail,
         password: hashedPassword,
         firstName,
         lastName
     })
+    
     return newUser
 }
 

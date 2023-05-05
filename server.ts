@@ -1,12 +1,10 @@
 import { NotFoundError } from "./utils/errors";
 import { PORT } from "./config"
+import * as security from "./middleware/security"
+import userRoutes from "./routes/user.route"
 const express = require('express');
-const security = require("./middleware/security")
 const cors = require('cors')
-const userRoutes = require("./routes/user.route")
-const db = require("./db")
 const app = express();
-
 
 app.use(cors());
 app.use(express.json());

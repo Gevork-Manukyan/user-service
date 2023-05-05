@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAuthenticatedUser = exports.extractUserFromJwt = exports.extractJwtHeader = void 0;
 const errors_1 = require("../utils/errors");
 const config_1 = require("../config");
-const { jwt } = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 // Extract the JWT from the request header
 function extractJwtHeader({ headers }) {
     if (headers === null || headers === void 0 ? void 0 : headers.authorization) {

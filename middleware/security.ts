@@ -1,6 +1,6 @@
 import { UnauthorizedError } from "../utils/errors";
 import { SECRET_KEY } from "../config"
-const { jwt } = require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
 
 
 // Extract the JWT from the request header

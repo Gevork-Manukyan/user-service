@@ -1,4 +1,12 @@
-const db = require("../db")
+import db from "../db"
+
+interface PublicUser {
+  id: number,
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string
+}
 
 // Create a User model
 class User {
@@ -17,7 +25,7 @@ class User {
     this.password = password;
   }
 
-  static createTable = () => {
+  static createTable = (): void => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       firstName TEXT NOT NULL,
@@ -27,7 +35,7 @@ class User {
     )`);
   }
 
-  static create(user: User) {
+  static create = (user: PublicUser): Promise<User> => {
     return new Promise((resolve, reject) => {
       db.run('INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)', [user.firstName, user.lastName, user.email, user.password],  (err: Error) => {
         if (err) {
@@ -39,7 +47,7 @@ class User {
     });
   }
 
-  static findById(id: number) {
+  static findById = (id: number): Promise<User | null>  => {
     return new Promise((resolve, reject) => {
       db.get('SELECT * FROM users WHERE id = ?', [id], function(err: Error, row: User) {
         if (err) {
@@ -53,7 +61,7 @@ class User {
     });
   }
 
-  static findByEmail(email: string) {
+  static findByEmail = (email: string): Promise<User | null> => {
     return new Promise((resolve, reject) => {
       db.get('SELECT * FROM users WHERE email = ?', [email], function(err: Error, row: User) {
         if (err) {
@@ -67,7 +75,7 @@ class User {
     });
   }
 
-  static getAll() {
+  static getAll = (): Promise<User[]> => {
     return new Promise((resolve, reject) => {
       db.all('SELECT * FROM users', function(err: Error, rows: [User]) {
         if (err) {
@@ -79,7 +87,7 @@ class User {
     });
   }
 
-  update() {
+  update = (): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
       db.run('UPDATE users SET firstName = ?, lastName = ?, email = ?, password = ? WHERE id = ?', [this.firstName, this.lastName, this.email, this.password, this.id], function(err: Error) {
         if (err) {
@@ -91,7 +99,7 @@ class User {
     });
   }
 
-  delete() {
+  delete = (): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
       db.run('DELETE FROM users WHERE id = ?', [this.id], function(err: Error) {
         if (err) {

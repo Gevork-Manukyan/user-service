@@ -8,13 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.register = void 0;
 const errors_1 = require("../utils/errors");
 const config_1 = require("../config");
+const user_model_1 = __importDefault(require("../models/user.model"));
 const bcrypt = require('bcrypt');
-const User = require("../models/user.model");
-const db = require("../db");
 function register(credentials) {
     return __awaiter(this, void 0, void 0, function* () {
         const requiredFields = ['email', 'password', 'firstName', 'lastName'];
@@ -35,14 +37,15 @@ function register(credentials) {
         if (password.trim() === "")
             throw new errors_1.BadRequestError('Invalid Password');
         // Check if user exists with this email
-        const existingUser = yield User.findByEmail(email);
+        const existingUser = yield user_model_1.default.findByEmail(email);
         if (existingUser)
             throw new errors_1.BadRequestError(`A user already exists with email: ${email}`);
         // Encrypt Password
         const hashedPassword = yield bcrypt.hash(password, config_1.BCRYPT_WORK_FACTOR);
         const normalizedEmail = email.toLowerCase();
         // Save user to DB
-        const newUser = yield User.create({
+        const newUser = yield user_model_1.default.create({
+            id: 0,
             email: normalizedEmail,
             password: hashedPassword,
             firstName,
@@ -63,7 +66,7 @@ function login(credentials) {
         const email = credentials.email.toLowerCase();
         const password = credentials.password;
         // Check if user exists with this email
-        const existingUser = yield User.findByEmail(email);
+        const existingUser = yield user_model_1.default.findByEmail(email);
         if (!existingUser)
             throw new errors_1.BadRequestError(`No user found with email: ${email}`);
         // Check password
